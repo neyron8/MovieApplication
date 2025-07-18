@@ -23,7 +23,7 @@ data class CinemaResponse(
         @SerialName("kinopoiskId")
         val kinopoiskId: Int?,
         @SerialName("nameEn")
-        val nameEn: Any?,
+        val nameEn: String?,
         @SerialName("nameOriginal")
         val nameOriginal: String?,
         @SerialName("nameRu")

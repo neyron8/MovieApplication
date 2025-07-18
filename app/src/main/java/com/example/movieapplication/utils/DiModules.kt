@@ -1,8 +1,7 @@
 package com.example.movieapplication.utils
 
-import android.app.Application
-import com.example.movieapplication.ApiInterface
-import com.example.movieapplication.MainRepository
+import com.example.movieapplication.network.ApiInterface
+import com.example.movieapplication.repository.MainRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
