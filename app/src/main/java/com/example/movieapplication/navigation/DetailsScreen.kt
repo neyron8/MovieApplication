@@ -55,7 +55,7 @@ fun DetailsScreen(mainViewModel: MainViewVodel = hiltViewModel(), id: Int) {
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             Text(
-                text = nameGiver(filmData).toString(),
+                text = nameGiverDet(item = filmData).toString(),
                 modifier = Modifier.fillMaxWidth(),
                 fontSize = 38.sp,
                 color = Color.White,
@@ -176,7 +176,7 @@ fun BackGroundPoster(filmData: FilmData) {
 
 }
 
-fun nameGiver(item: FilmData): String? {
+fun nameGiverDet(item: FilmData): String? {
     val name = listOf(
         item.nameRu.toString(),
         item.nameEn.toString(),

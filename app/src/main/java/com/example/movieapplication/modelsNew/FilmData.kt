@@ -97,13 +97,4 @@ data class FilmData(
     @SerialName("year")
     val year: Int? = 0
 ){
-    data class Genre(
-        @SerialName("genre")
-        val genre: String?
-    )
-
-    data class Country(
-        @SerialName("country")
-        val country: String?
-    )
 }

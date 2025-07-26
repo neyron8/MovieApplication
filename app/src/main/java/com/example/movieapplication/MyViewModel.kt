@@ -5,9 +5,12 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.movieapplication.modelsNew.CinemaKeywordResponse
 import com.example.movieapplication.modelsNew.CinemaResponse
 import com.example.movieapplication.modelsNew.FilmData
+import com.example.movieapplication.modelsNew.Item
 import com.example.movieapplication.repository.MainRepository
+import com.example.movieapplication.utils.convertFilmToItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -43,16 +46,34 @@ class MainViewVodel @Inject constructor(
     }
 
     fun getCinemaByName(name: String)= viewModelScope.launch{
-        val k = mainRepository.getCinemaByName("Matrix")
-        Log.d("JACKPOT", k.body()?.films.toString())
+        val k = mainRepository.getCinemaByName(name)
+        if(k.isSuccessful){
+            k.body()?.let {
+                val con = convertFilmToItem(it.films)
+                Log.d("Before", listOfStates.value.data.toString())
+                //listOfStates.value = MainState(keywordData = it.films)
+               // listOfStates.value = MainState(data = emptyList())
+                clearList()
+                listOfStates.value = MainState(data = con)
+                Log.d("After", listOfStates.value.data.toString())
+            }
+        }
+        //Log.d("JACKPOT", k.body()?.films.toString())
     }
+
+    fun clearList(){
+        listOfStates.value = MainState(data = emptyList())
+        Log.d("Clear", listOfStates.value.data.toString())
+    }
+
 }
 
 data class MainState(
     val isLoading: Boolean = false,
-    val data: List<CinemaResponse.Item> = emptyList(),
+    var data: List<Item> = emptyList(),
     val error: String = "",
-    val filmData: FilmData = FilmData()
+    val filmData: FilmData = FilmData(),
+    val keywordData: List<CinemaKeywordResponse.Film> = emptyList()
 )
 
 

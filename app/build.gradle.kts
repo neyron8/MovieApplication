@@ -73,4 +73,7 @@ dependencies {
     implementation("com.squareup:javapoet:1.13.0")
     implementation ("com.squareup.okhttp3:logging-interceptor:4.7.2")
     implementation ("com.squareup.okhttp3:okhttp:4.7.2")
+
+    //lottie
+    implementation( "com.airbnb.android:lottie-compose:5.2.0")
 }

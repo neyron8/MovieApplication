@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class CinemaKeywordResponse(
     @SerialName("films")
-    val films: List<Film?>?,
+    val films: List<Film>,
     @SerialName("keyword")
     val keyword: String?,
     @SerialName("pagesCount")
@@ -16,16 +16,6 @@ data class CinemaKeywordResponse(
     val searchFilmsCountResult: Int?
 )
 {
-    data class Genre(
-        @SerialName("genre")
-        val genre: String?
-    )
-
-    data class Country(
-        @SerialName("country")
-        val country: String?
-    )
-
     data class Film(
         @SerialName("countries")
         val countries: List<Country?>?,

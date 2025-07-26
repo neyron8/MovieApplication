@@ -12,43 +12,4 @@ data class CinemaResponse(
     val total: Int?,
     @SerialName("totalPages")
     val totalPages: Int?
-) {
-    data class Item(
-        @SerialName("countries")
-        val countries: List<Country?>?,
-        @SerialName("genres")
-        val genres: List<Genre?>?,
-        @SerialName("imdbId")
-        val imdbId: String?,
-        @SerialName("kinopoiskId")
-        val kinopoiskId: Int?,
-        @SerialName("nameEn")
-        val nameEn: String?,
-        @SerialName("nameOriginal")
-        val nameOriginal: String?,
-        @SerialName("nameRu")
-        val nameRu: String?,
-        @SerialName("posterUrl")
-        val posterUrl: String?,
-        @SerialName("posterUrlPreview")
-        val posterUrlPreview: String?,
-        @SerialName("ratingImdb")
-        val ratingImdb: Double?,
-        @SerialName("ratingKinopoisk")
-        val ratingKinopoisk: Double?,
-        @SerialName("type")
-        val type: String?,
-        @SerialName("year")
-        val year: Int?
-    ) {
-        data class Country(
-            @SerialName("country")
-            val country: String?
-        )
-
-        data class Genre(
-            @SerialName("genre")
-            val genre: String?
-        )
-    }
-}
+)
