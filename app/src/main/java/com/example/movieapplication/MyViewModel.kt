@@ -6,24 +6,25 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.movieapplication.modelsNew.CinemaKeywordResponse
-import com.example.movieapplication.modelsNew.CinemaResponse
 import com.example.movieapplication.modelsNew.FilmData
 import com.example.movieapplication.modelsNew.Item
 import com.example.movieapplication.repository.MainRepository
 import com.example.movieapplication.utils.convertFilmToItem
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
+import com.google.firebase.options
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewVodel @Inject constructor(
+class MainViewModel @Inject constructor(
     private val mainRepository: MainRepository
 ): ViewModel() {
     var listOfStates: MutableState<MainState> = mutableStateOf(MainState())
 
     init {
         getStartMovies()
-        //getCinemaByName("Matrix")
     }
 
     fun getStartMovies() = viewModelScope.launch{
@@ -58,7 +59,6 @@ class MainViewVodel @Inject constructor(
                 Log.d("After", listOfStates.value.data.toString())
             }
         }
-        //Log.d("JACKPOT", k.body()?.films.toString())
     }
 
     fun clearList(){

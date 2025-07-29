@@ -32,13 +32,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
-import com.example.movieapplication.MainViewVodel
+import com.example.movieapplication.MainViewModel
 import com.example.movieapplication.R
 import com.example.movieapplication.modelsNew.FilmData
 
 
 @Composable
-fun DetailsScreen(mainViewModel: MainViewVodel = hiltViewModel(), id: Int) {
+fun DetailsScreen(mainViewModel: MainViewModel = hiltViewModel(), id: Int) {
     mainViewModel.getDataById(id)
     val filmData = mainViewModel.listOfStates.value.filmData
 
