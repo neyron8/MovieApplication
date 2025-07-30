@@ -1,6 +1,7 @@
 package com.example.movieapplication.navigation
 
 import android.util.Log
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
@@ -13,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -21,17 +21,23 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults.buttonColors
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -40,35 +46,43 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.movieapplication.MainViewModel
-import com.example.movieapplication.modelsNew.CinemaKeywordResponse
 import com.example.movieapplication.modelsNew.Item
+import com.example.movieapplication.utils.BackPressSample
+import com.example.movieapplication.utils.nameGiver
 
+
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StartScreen(mainViewModel: MainViewModel = hiltViewModel(), navController: NavHostController) {
+
+    BackPressSample()
     val state = mainViewModel.listOfStates
     val query: MutableState<String> = remember { mutableStateOf("") }
+
     Scaffold(
         modifier = Modifier.background(Color.Black.copy(.8f)),
         topBar = {
-            TopBar()
-        },
-        floatingActionButton = {
-            FloatingButton(mainViewModel,navController)
+            TopBar(
+                navController = navController
+            )
         }, content = { paddingValues ->
             Column(modifier = Modifier.padding(paddingValues)) {
-                OutlinedTextField(value = query.value, onValueChange = {
-                    query.value = it
-                },
+                OutlinedTextField(
+                    value = query.value, onValueChange = {
+                        query.value = it
+                    },
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     keyboardActions = KeyboardActions(
                         onDone = { mainViewModel.getCinemaByName(query.value) }
@@ -170,34 +184,76 @@ fun ItemUi(itemIndex: Int, movieList: List<Item>, navController: NavHostControll
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBar() {
+fun TopBar(
+    mainViewModel: MainViewModel = hiltViewModel(),
+    navController: NavHostController
+) {
+    val openDialog = remember { mutableStateOf(false) }
+
     TopAppBar(
         title = { Text(text = "Новинки") },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = Color.White.copy(.4f)
-        )
+        ),
+        actions = {
+            IconButton(onClick = {
+                openDialog.value = true
+            }) {
+                Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = "LogOut")
+            }
+            if (openDialog.value) {
+                AlertLogOut(openDialog, mainViewModel, navController)
+            }
+        }
     )
 }
 
-fun nameGiver(item: Item): String? {
-    return listOf(
-        item.nameRu.toString(),
-        item.nameOriginal.toString(),
-        item.nameEn.toString()
-    ).first { it != "null" }
-}
-
-fun nameGiverNew(item: CinemaKeywordResponse.Film): String? {
-    return listOf(
-        item.nameRu.toString(),
-        item.nameEn.toString(),
-    ).first { it != "null" }
-}
-
 @Composable
+private fun AlertLogOut(
+    openDialog: MutableState<Boolean>,
+    mainViewModel: MainViewModel,
+    navController: NavHostController
+) {
+    AlertDialog(
+        onDismissRequest = { openDialog.value = false },
+        title = { Text(text = "Подтверждение действия") },
+        text = { Text("Вы действительно хотите выйти?") },
+        confirmButton = {
+            Button(
+                {
+                    openDialog.value = false
+                    mainViewModel.signOut()
+                    navController.navigate("Login Screen") {
+                        popUpTo("Start Screen") { inclusive = true }
+                    }
+                },
+                colors = buttonColors(containerColor = Color.DarkGray),
+                border = BorderStroke(1.dp, Color.LightGray)
+            ) {
+                Text("Выйти", fontSize = 22.sp)
+            }
+        },
+        dismissButton = {
+            Button(
+                onClick = { openDialog.value = false },
+                colors = buttonColors(containerColor = Color.DarkGray),
+                border = BorderStroke(1.dp, Color.LightGray)
+            ) {
+                Text("Отмена", fontSize = 22.sp)
+            }
+        },
+        containerColor = Color.DarkGray,
+        titleContentColor = Color.LightGray,
+        textContentColor = Color.LightGray,
+        iconContentColor = Color.LightGray
+    )
+}
+
+/*@Composable
 fun FloatingButton(mainViewModel: MainViewModel = hiltViewModel(), navController: NavController) {
     FloatingActionButton(modifier = Modifier.size(50.dp), onClick = {
         mainViewModel.clearList()
     }) {
     }
-}
+}*/
+

@@ -27,7 +27,7 @@ fun SplashScreen(navController: NavHostController) {
         delay(2000)
 
         navController.popBackStack()
-        navController.navigate("Start Screen")
+        navController.navigate("Login Screen")
     }
 
     Column(
