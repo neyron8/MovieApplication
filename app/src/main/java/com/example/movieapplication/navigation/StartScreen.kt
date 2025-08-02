@@ -9,6 +9,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -138,10 +139,13 @@ fun ItemUi(itemIndex: Int, movieList: List<Item>, navController: NavHostControll
     val name = nameGiver(movieList[itemIndex])
     Card(
         Modifier
-            .wrapContentSize()
+            .fillMaxWidth()
+            .aspectRatio(3f / 4f)
             .padding(10.dp)
             .clickable {
-                navController.navigate("Details screen/${movieList[itemIndex].kinopoiskId}")
+                movieList.getOrNull(itemIndex)?.kinopoiskId?.let { id ->
+                    navController.navigate("Details screen/$id")
+                }
             },
         elevation = CardDefaults.cardElevation(8.dp)
     ) {
@@ -156,7 +160,7 @@ fun ItemUi(itemIndex: Int, movieList: List<Item>, navController: NavHostControll
             )
             Column(
                 modifier = Modifier
-                    .fillMaxHeight()
+                    .fillMaxWidth()
                     .background(Color.LightGray.copy(.8f))
                     .padding(6.dp)
             ) {
