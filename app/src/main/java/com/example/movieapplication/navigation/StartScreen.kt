@@ -22,11 +22,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults.buttonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -46,6 +46,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
@@ -72,19 +73,23 @@ fun StartScreen(mainViewModel: MainViewModel = hiltViewModel(), navController: N
 
     Scaffold(
         modifier = Modifier
-            .background(Color.Black.copy(.8f))
+            .background(Color(0xFF1A1A1A))
             .nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             TopBar(
                 navController = navController,
                 scrollBehavior = scrollBehavior
             )
-        }, content = { paddingValues ->
-            Column(modifier = Modifier.padding(paddingValues)) {
-               OutlinedTextField(
-                    value = query.value, onValueChange = {
-                        query.value = it
-                    },
+        },
+        content = { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .padding(paddingValues)
+                    .padding(horizontal = 16.dp)
+            ) {
+                OutlinedTextField(
+                    value = query.value,
+                    onValueChange = { query.value = it },
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     keyboardActions = KeyboardActions(
                         onDone = { mainViewModel.getCinemaByName(query.value) }
@@ -92,10 +97,24 @@ fun StartScreen(mainViewModel: MainViewModel = hiltViewModel(), navController: N
                     enabled = true,
                     singleLine = true,
                     leadingIcon = {
-                        Icon(imageVector = Icons.Default.Search, contentDescription = null)
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = null,
+                            tint = Color(0xFFBB86FC)
+                        )
                     },
-                    label = { Text(text = "Search here...") },
-                    modifier = Modifier.fillMaxWidth()
+                    label = { Text(text = "Поиск", color = Color(0xFFBB86FC)) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    colors = androidx.compose.material3.OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = Color(0xFFBB86FC),
+                        unfocusedBorderColor = Color(0xFF4A4A4A),
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White,
+                        cursorColor = Color(0xFFBB86FC)
+                    ),
+                    shape = RoundedCornerShape(12.dp)
                 )
 
                 if (state.value.error.isNotBlank()) {
@@ -103,33 +122,37 @@ fun StartScreen(mainViewModel: MainViewModel = hiltViewModel(), navController: N
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
+                            .wrapContentSize(Alignment.Center)
                     ) {
                         Text(
-                            modifier = Modifier.align(Alignment.Center),
-                            text = mainViewModel.listOfStates.value.error
+                            text = state.value.error,
+                            color = Color(0xFFEF5350),
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Medium,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(16.dp)
                         )
                     }
-                }
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
-                    Modifier
-                        .padding(8.dp)
-                        .fillMaxSize()
-                        .background(
-                            Color.Transparent
-                        ),
-                    content = {
-                        items(state.value.data.size) {
-                            ItemUi(
-                                itemIndex = it, movieList = state.value.data,
-                                navController = navController
-                            )
+                } else {
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(2),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(top = 8.dp),
+                        content = {
+                            items(state.value.data.size) {
+                                ItemUi(
+                                    itemIndex = it,
+                                    movieList = state.value.data,
+                                    navController = navController
+                                )
+                            }
                         }
-                    }
-                )
+                    )
+                }
             }
         },
-        containerColor = Color.Transparent
+        containerColor = Color(0xFF1A1A1A)
     )
 }
 
@@ -138,16 +161,20 @@ fun StartScreen(mainViewModel: MainViewModel = hiltViewModel(), navController: N
 fun ItemUi(itemIndex: Int, movieList: List<Item>, navController: NavHostController) {
     val name = nameGiver(movieList[itemIndex])
     Card(
-        Modifier
+        modifier = Modifier
             .fillMaxWidth()
-            .aspectRatio(3f / 4f)
-            .padding(10.dp)
+            .aspectRatio(2f / 3f)
+            .padding(8.dp)
+            .shadow(8.dp, RoundedCornerShape(16.dp))
             .clickable {
                 movieList.getOrNull(itemIndex)?.kinopoiskId?.let { id ->
                     navController.navigate("Details screen/$id")
                 }
             },
-        elevation = CardDefaults.cardElevation(8.dp)
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFF2A2A2A)
+        ),
+        shape = RoundedCornerShape(16.dp)
     ) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
             AsyncImage(
@@ -155,14 +182,16 @@ fun ItemUi(itemIndex: Int, movieList: List<Item>, navController: NavHostControll
                 contentDescription = movieList[itemIndex].nameOriginal,
                 modifier = Modifier
                     .fillMaxSize()
-                    .clip(RoundedCornerShape(10.dp)),
+                    .clip(RoundedCornerShape(16.dp)),
                 contentScale = ContentScale.Crop
             )
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color.LightGray.copy(.8f))
-                    .padding(6.dp)
+                    .background(
+                        Color(0xFF121212).copy(alpha = 0.7f)
+                    )
+                    .padding(8.dp)
             ) {
                 Text(
                     text = name.toString(),
@@ -170,11 +199,19 @@ fun ItemUi(itemIndex: Int, movieList: List<Item>, navController: NavHostControll
                         .fillMaxWidth()
                         .basicMarquee(),
                     textAlign = TextAlign.Center,
-                    color = Color.Black,
-                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 14.sp,
                     maxLines = 1
                 )
-                Spacer(modifier = Modifier.height(2.dp))
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = movieList[itemIndex].year?.toString() ?: "",
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center,
+                    color = Color(0xFFBB86FC),
+                    fontSize = 12.sp
+                )
             }
         }
     }
@@ -190,15 +227,25 @@ fun TopBar(
     val openDialog = remember { mutableStateOf(false) }
 
     TopAppBar(
-        title = { Text(text = "Новинки") },
+        title = {
+            Text(
+                text = "New Releases",
+                color = Color.White,
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp
+            )
+        },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color.White.copy(.4f)
+            containerColor = Color(0xFF121212),
+            scrolledContainerColor = Color(0xFF121212).copy(alpha = 0.9f)
         ),
         actions = {
-            IconButton(onClick = {
-                openDialog.value = true
-            }) {
-                Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = "LogOut")
+            IconButton(onClick = { openDialog.value = true }) {
+                Icon(
+                    Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Log Out",
+                    tint = Color(0xFFBB86FC)
+                )
             }
             if (openDialog.value) {
                 AlertLogOut(openDialog, mainViewModel, navController)
@@ -216,35 +263,54 @@ private fun AlertLogOut(
 ) {
     AlertDialog(
         onDismissRequest = { openDialog.value = false },
-        title = { Text(text = "Подтверждение действия") },
-        text = { Text("Вы действительно хотите выйти?") },
+        title = {
+            Text(
+                text = "Подтверждение",
+                color = Color.White,
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp
+            )
+        },
+        text = {
+            Text(
+                text = "Вы точно хотите выйти из аккаунта?",
+                color = Color.White,
+                fontSize = 16.sp
+            )
+        },
         confirmButton = {
             Button(
-                {
+                onClick = {
                     openDialog.value = false
                     mainViewModel.signOut()
                     navController.navigate("Login Screen") {
                         popUpTo("Start Screen") { inclusive = true }
                     }
                 },
-                colors = buttonColors(containerColor = Color.DarkGray),
-                border = BorderStroke(1.dp, Color.LightGray)
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFBB86FC),
+                    contentColor = Color.White
+                ),
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier.padding(8.dp)
             ) {
-                Text("Выйти", fontSize = 22.sp)
+                Text("Да", fontSize = 16.sp, fontWeight = FontWeight.Medium)
             }
         },
         dismissButton = {
             Button(
                 onClick = { openDialog.value = false },
-                colors = buttonColors(containerColor = Color.DarkGray),
-                border = BorderStroke(1.dp, Color.LightGray)
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF4A4A4A),
+                    contentColor = Color.White
+                ),
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier.padding(8.dp)
             ) {
-                Text("Отмена", fontSize = 22.sp)
+                Text("Нет", fontSize = 16.sp, fontWeight = FontWeight.Medium)
             }
         },
-        containerColor = Color.DarkGray,
-        titleContentColor = Color.LightGray,
-        textContentColor = Color.LightGray,
-        iconContentColor = Color.LightGray
+        containerColor = Color(0xFF2A2A2A),
+        shape = RoundedCornerShape(16.dp)
     )
 }
