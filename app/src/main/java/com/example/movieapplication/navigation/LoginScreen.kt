@@ -1,8 +1,10 @@
 package com.example.movieapplication.navigation
 
+import android.content.Context
 import android.util.Log
 import android.util.Patterns
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,12 +13,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ButtonDefaults.buttonColors
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -25,6 +30,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,8 +46,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.movieapplication.MainViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
@@ -165,7 +173,7 @@ fun LoginScreen(mainViewModel: MainViewModel = hiltViewModel(), navController: N
                 )
             },
             enabled = isFormValid && isEmailValid,
-            colors = ButtonDefaults.buttonColors(
+            colors = buttonColors(
                 containerColor = Color(0xFF6200EE),
                 contentColor = Color(0xFFFFFFFF),
 
@@ -174,7 +182,14 @@ fun LoginScreen(mainViewModel: MainViewModel = hiltViewModel(), navController: N
         ) {
             Text("Войти")
         }
-
+        TextButton(onClick = {
+            navController.navigate("Password Screen")
+        }) {
+            Text(
+                text = "Забыли пароль?",
+                color = Color(0xFF6200EE)
+            )
+        }
         TextButton(onClick = {
             navController.navigate("SignUp Screen")
             email = ""

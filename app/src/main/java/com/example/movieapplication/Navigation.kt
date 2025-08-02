@@ -8,6 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.movieapplication.navigation.DetailsScreen
 import com.example.movieapplication.navigation.LoginScreen
+import com.example.movieapplication.navigation.PasswordScreen
 import com.example.movieapplication.navigation.SignUpScreen
 import com.example.movieapplication.navigation.SplashScreen
 import com.example.movieapplication.navigation.StartScreen
@@ -42,6 +43,9 @@ fun Navigation(){
         }
         composable("SignUp Screen") {
             SignUpScreen(navController = navController)
+        }
+        composable("Password Screen") {
+            PasswordScreen(navController = navController)
         }
     }
 }

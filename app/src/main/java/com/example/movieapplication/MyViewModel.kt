@@ -58,8 +58,6 @@ class MainViewModel @Inject constructor(
             k.body()?.let {
                 val con = convertFilmToItem(it.films)
                 Log.d("Before", listOfStates.value.data.toString())
-                //listOfStates.value = MainState(keywordData = it.films)
-                // listOfStates.value = MainState(data = emptyList())
                 clearList()
                 listOfStates.value = MainState(data = con)
                 Log.d("After", listOfStates.value.data.toString())
@@ -100,6 +98,20 @@ class MainViewModel @Inject constructor(
                         else -> task.exception?.message ?: "Ошибка аутентификации"
                     }
                     Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
+                }
+            }
+    }
+
+    fun returnPassword(email: String, navController: NavController, context: Context){
+        auth.sendPasswordResetEmail(email)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful){
+                    navController.navigate("Login Screen")
+                    Toast.makeText(context, "Письмо для смены пароля отправлено на почту", Toast.LENGTH_SHORT)
+                        .show()
+                } else {
+                    Toast.makeText(context, task.exception?.message, Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
     }

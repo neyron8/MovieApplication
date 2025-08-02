@@ -61,25 +61,26 @@ import com.example.movieapplication.modelsNew.Item
 import com.example.movieapplication.utils.BackPressSample
 import com.example.movieapplication.utils.nameGiver
 
-
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StartScreen(mainViewModel: MainViewModel = hiltViewModel(), navController: NavHostController) {
-
     BackPressSample()
     val state = mainViewModel.listOfStates
     val query: MutableState<String> = remember { mutableStateOf("") }
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
 
     Scaffold(
-        modifier = Modifier.background(Color.Black.copy(.8f)),
+        modifier = Modifier
+            .background(Color.Black.copy(.8f))
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             TopBar(
-                navController = navController
+                navController = navController,
+                scrollBehavior = scrollBehavior
             )
         }, content = { paddingValues ->
             Column(modifier = Modifier.padding(paddingValues)) {
-                OutlinedTextField(
+               OutlinedTextField(
                     value = query.value, onValueChange = {
                         query.value = it
                     },
@@ -118,11 +119,6 @@ fun StartScreen(mainViewModel: MainViewModel = hiltViewModel(), navController: N
                         ),
                     content = {
                         items(state.value.data.size) {
-
-                            //items(state.value.keywordData.size) {
-                            /*if (it >= state.movies.size - 1 && !state.endReached && !state.isLoading) {
-                                movieViewModel.loadNextItems()
-                            }*/
                             ItemUi(
                                 itemIndex = it, movieList = state.value.data,
                                 navController = navController
@@ -131,7 +127,6 @@ fun StartScreen(mainViewModel: MainViewModel = hiltViewModel(), navController: N
                     }
                 )
             }
-
         },
         containerColor = Color.Transparent
     )
@@ -169,7 +164,7 @@ fun ItemUi(itemIndex: Int, movieList: List<Item>, navController: NavHostControll
                     text = name.toString(),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .basicMarquee(), //Эффект пролистывания текста, если он не вмещается в контейнер
+                        .basicMarquee(),
                     textAlign = TextAlign.Center,
                     color = Color.Black,
                     fontWeight = FontWeight.Bold,
@@ -181,12 +176,12 @@ fun ItemUi(itemIndex: Int, movieList: List<Item>, navController: NavHostControll
     }
 }
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBar(
     mainViewModel: MainViewModel = hiltViewModel(),
-    navController: NavHostController
+    navController: NavHostController,
+    scrollBehavior: TopAppBarScrollBehavior
 ) {
     val openDialog = remember { mutableStateOf(false) }
 
@@ -204,7 +199,8 @@ fun TopBar(
             if (openDialog.value) {
                 AlertLogOut(openDialog, mainViewModel, navController)
             }
-        }
+        },
+        scrollBehavior = scrollBehavior
     )
 }
 
@@ -248,12 +244,3 @@ private fun AlertLogOut(
         iconContentColor = Color.LightGray
     )
 }
-
-/*@Composable
-fun FloatingButton(mainViewModel: MainViewModel = hiltViewModel(), navController: NavController) {
-    FloatingActionButton(modifier = Modifier.size(50.dp), onClick = {
-        mainViewModel.clearList()
-    }) {
-    }
-}*/
-
