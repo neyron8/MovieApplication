@@ -87,10 +87,10 @@ fun SignUpScreen(mainViewModel: MainViewModel = hiltViewModel(), navController: 
                     .background(Color(0xFF2A2A2A))
                     .padding(24.dp),
                 colors = CardDefaults.cardColors(containerColor = Color(0xFF2A2A2A))
-            ){
+            ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
-                ){
+                ) {
                     Spacer(Modifier.height(8.dp))
                     Text(
                         text = "Регистрация",
@@ -139,7 +139,11 @@ fun SignUpScreen(mainViewModel: MainViewModel = hiltViewModel(), navController: 
                         visualTransformation = if (passwordHidden) PasswordVisualTransformation() else VisualTransformation.None,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                         leadingIcon = {
-                            Icon(Icons.Filled.Lock, contentDescription = null, tint = Color(0xFFBB86FC))
+                            Icon(
+                                Icons.Filled.Lock,
+                                contentDescription = null,
+                                tint = Color(0xFFBB86FC)
+                            )
                         },
                         trailingIcon = {
                             IconButton(onClick = { passwordHidden = !passwordHidden }) {
@@ -184,7 +188,8 @@ fun SignUpScreen(mainViewModel: MainViewModel = hiltViewModel(), navController: 
                             disabledContentColor = Color.White
                         ),
                         enabled = isFormValid && isEmailValid,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
                             .height(48.dp),
                         shape = RoundedCornerShape(12.dp)
 
@@ -205,5 +210,6 @@ fun SignUpScreen(mainViewModel: MainViewModel = hiltViewModel(), navController: 
                     }
                 }
             }
+        }
     }
-}}
+}

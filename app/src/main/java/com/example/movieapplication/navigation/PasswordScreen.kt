@@ -43,7 +43,7 @@ import androidx.navigation.NavController
 import com.example.movieapplication.MainViewModel
 
 @Composable
-fun PasswordScreen(mainViewModel: MainViewModel = hiltViewModel(), navController: NavController){
+fun PasswordScreen(mainViewModel: MainViewModel = hiltViewModel(), navController: NavController) {
 
     val context = LocalContext.current
     var email by rememberSaveable { mutableStateOf("") }
@@ -95,19 +95,24 @@ fun PasswordScreen(mainViewModel: MainViewModel = hiltViewModel(), navController
             modifier = Modifier.fillMaxWidth()
         )
 
-        Button(onClick = {
-            mainViewModel.returnPassword(email = email, navController = navController, context = context)
-            navController.navigate("Login Screen") {
-                popUpTo("Password Screen") { inclusive = true }
-            }
-        }, enabled = isFormValid && isEmailValid,
+        Button(
+            onClick = {
+                mainViewModel.returnPassword(
+                    email = email,
+                    navController = navController,
+                    context = context
+                )
+                navController.navigate("Login Screen") {
+                    popUpTo("Password Screen") { inclusive = true }
+                }
+            }, enabled = isFormValid && isEmailValid,
             colors = buttonColors(
                 containerColor = Color(0xFF6200EE),
                 contentColor = Color(0xFFFFFFFF),
 
                 ),
             modifier = Modifier.padding(8.dp)
-            ) { Text("Ок")}
+        ) { Text("Ок") }
 
     }
 }

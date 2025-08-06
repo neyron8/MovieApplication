@@ -11,6 +11,7 @@ import androidx.navigation.NavController
 import com.example.movieapplication.modelsNew.CinemaKeywordResponse
 import com.example.movieapplication.modelsNew.FilmData
 import com.example.movieapplication.modelsNew.Item
+import com.example.movieapplication.modelsNew.ScreenShots
 import com.example.movieapplication.repository.MainRepository
 import com.example.movieapplication.utils.convertFilmToItem
 import com.google.firebase.Firebase
@@ -28,6 +29,7 @@ class MainViewModel @Inject constructor(
 ) : ViewModel() {
     var listOfStates: MutableState<MainState> = mutableStateOf(MainState())
     var auth = Firebase.auth
+
 
     init {
         getStartMovies()
@@ -61,6 +63,17 @@ class MainViewModel @Inject constructor(
                 clearList()
                 listOfStates.value = MainState(data = con)
                 Log.d("After", listOfStates.value.data.toString())
+            }
+        }
+    }
+
+    fun getScreenShotsById(id: Int) = viewModelScope.launch {
+        val k = mainRepository.getScreenShotsById(id)
+        if(k.isSuccessful){
+            k.body()?.let {
+                listOfStates.value = listOfStates.value.copy(
+                    screenShots = it.items
+                )
             }
         }
     }
@@ -123,7 +136,7 @@ data class MainState(
     var data: List<Item> = emptyList(),
     val error: String = "",
     val filmData: FilmData = FilmData(),
-    val keywordData: List<CinemaKeywordResponse.Film> = emptyList()
+    val screenShots: List<ScreenShots.ItemX>? = emptyList()
 )
 
 

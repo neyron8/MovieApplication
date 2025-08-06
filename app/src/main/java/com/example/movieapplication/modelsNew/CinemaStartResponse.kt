@@ -5,7 +5,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class CinemaResponse(
+data class CinemaStartResponse(
     @SerialName("items")
     val items: List<Item>,
     @SerialName("total")
