@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ScreenShots(
     @SerialName("items")
-    val items: List<ItemX>?,
+    val items: List<ItemX>,
     @SerialName("total")
     val total: Int?,
     @SerialName("totalPages")

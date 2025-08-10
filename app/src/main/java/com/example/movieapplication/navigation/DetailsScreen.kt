@@ -7,11 +7,13 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,6 +21,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -41,7 +44,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -50,28 +52,38 @@ import coil.compose.AsyncImage
 import com.example.movieapplication.MainViewModel
 import com.example.movieapplication.R
 import com.example.movieapplication.modelsNew.FilmData
-
-
+import com.example.movieapplication.modelsNew.ScreenShots
+import androidx.compose.foundation.lazy.items
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 @Composable
 fun DetailsScreen(
     mainViewModel: MainViewModel = hiltViewModel(),
     id: Int
 ) {
+    // Вызываем загрузку данных только один раз при изменении id
+    LaunchedEffect(key1 = id) {
+        mainViewModel.getDataById(id)
+        mainViewModel.getScreenShotsById(id)
+    }
 
-    mainViewModel.getDataById(id)
-    mainViewModel.getScreenShotsById(id)
-
-    val filmData = mainViewModel.listOfStates.value.filmData
+    val state = mainViewModel.listOfStates.value
+    val filmData = state.filmData
+    val screenShots = state.screenShots
     val scrollState = rememberScrollState()
     val animatedAlpha by animateFloatAsState(
-        targetValue = if (filmData != null) 1f else 0f,
+        targetValue = if (filmData != FilmData()) 1f else 0f,
         animationSpec = tween(durationMillis = 800, easing = FastOutSlowInEasing)
     )
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
+            .background(color = Color(0xFF4A4A4A)),
     ) {
         BackGroundPoster(filmData = filmData)
         Column(
@@ -83,7 +95,7 @@ fun DetailsScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(80.dp)) // Space for poster
+            Spacer(modifier = Modifier.height(80.dp))
             ForegroundPoster(filmData = filmData)
             Card(
                 modifier = Modifier
@@ -91,7 +103,7 @@ fun DetailsScreen(
                     .padding(horizontal = 16.dp),
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f)
+                    containerColor = Color(0xFF4A4A4A).copy(alpha = 0.95f)
                 ),
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
             ) {
@@ -104,7 +116,7 @@ fun DetailsScreen(
                     Text(
                         text = nameGiverDet(item = filmData).toString(),
                         style = MaterialTheme.typography.headlineMedium,
-                        color = MaterialTheme.colorScheme.onSurface,
+                        color = Color(0xFFBB86FC),
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -117,6 +129,82 @@ fun DetailsScreen(
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
+            ScreenshotsSection(screenShots = screenShots)
+        }
+    }
+}
+
+@Composable
+fun ScreenshotsSection(screenShots: List<ScreenShots.ItemX>?) {
+    if (screenShots.isNullOrEmpty()) return
+
+    var selectedScreenshot by remember { mutableStateOf<ScreenShots.ItemX?>(null) }
+
+    Text(
+        text = "Скриншоты",
+        style = MaterialTheme.typography.titleMedium,
+        color = Color(0xFF4A4A4A),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+    )
+
+    LazyRow(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items(screenShots) { screenshot ->
+            Card(
+                modifier = Modifier
+                    .width(300.dp)
+                    .height(300.dp)
+                    .clickable { selectedScreenshot = screenshot }, // Open dialog on click
+                shape = RoundedCornerShape(8.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            ) {
+                AsyncImage(
+                    model = screenshot.imageUrl ?: screenshot.previewUrl,
+                    contentDescription = "Screenshot",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(RoundedCornerShape(8.dp)),
+                    contentScale = ContentScale.Crop
+                )
+            }
+        }
+    }
+
+    // Dialog for enlarged screenshot
+    selectedScreenshot?.let { screenshot ->
+        Dialog(
+            onDismissRequest = { selectedScreenshot = null }, // Close dialog when dismissed
+            properties = DialogProperties(usePlatformDefaultWidth = false) // Allow custom width
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(0.9f) // 90% of screen width
+                    .fillMaxHeight(0.6f) // 60% of screen height
+                    //.background(Color(0xFF4A4A4A), RoundedCornerShape(16.dp))
+                    .clickable { selectedScreenshot = null }, // Close on click
+                contentAlignment = Alignment.Center
+            ) {
+                AsyncImage(
+                    model = screenshot.imageUrl ?: screenshot.previewUrl,
+                    contentDescription = "Enlarged Screenshot",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(RoundedCornerShape(16.dp))
+                        .animateContentSize(
+                            animationSpec = spring(
+                                dampingRatio = Spring.DampingRatioLowBouncy,
+                                stiffness = Spring.StiffnessLow
+                            )
+                        ),
+                    contentScale = ContentScale.Fit // Fit to maintain aspect ratio
+                )
+            }
         }
     }
 }
@@ -134,20 +222,20 @@ fun TextBuilder(icon: ImageVector, title: String, bodyText: String) {
             Icon(
                 imageVector = icon,
                 contentDescription = title,
-                tint = MaterialTheme.colorScheme.primary,
+                tint = Color(0xFFBB86FC),
                 modifier = Modifier.size(20.dp)
             )
             Text(
                 text = title,
                 modifier = Modifier.padding(start = 8.dp),
                 style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface
+                color = Color(0xFFBB86FC)
             )
         }
         Text(
             text = bodyText,
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            color = Color(0xFFBB86FC),
             lineHeight = 22.sp
         )
     }
@@ -166,14 +254,14 @@ fun Rating(filmData: FilmData, modifier: Modifier) {
             Icon(
                 imageVector = Icons.Filled.Star,
                 contentDescription = "Rating",
-                tint = MaterialTheme.colorScheme.primary,
+                tint = Color.Yellow,
                 modifier = Modifier.size(20.dp)
             )
             Text(
                 text = ratingGiverDet(filmData).toString(),
                 modifier = Modifier.padding(start = 6.dp),
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface
+                color = Color(0xFFBB86FC)
             )
         }
         Spacer(modifier = Modifier.width(24.dp))
@@ -181,14 +269,14 @@ fun Rating(filmData: FilmData, modifier: Modifier) {
             Icon(
                 painter = painterResource(id = R.drawable.time_24),
                 contentDescription = "Duration",
-                tint = MaterialTheme.colorScheme.primary,
+                tint = Color.White,
                 modifier = Modifier.size(20.dp)
             )
             Text(
                 text = "${filmData.filmLength} мин",
                 modifier = Modifier.padding(start = 6.dp),
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface
+                color = Color(0xFFBB86FC)
             )
         }
     }
@@ -239,7 +327,7 @@ fun BackGroundPoster(filmData: FilmData) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(color = Color(0xFF4A4A4A))
     ) {
         AsyncImage(
             model = filmData.posterUrl,
@@ -252,14 +340,14 @@ fun BackGroundPoster(filmData: FilmData) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(
+                /*.background(
                     brush = Brush.verticalGradient(
                         colors = listOf(
                             Color.Transparent,
                             MaterialTheme.colorScheme.background
                         )
                     )
-                )
+                )*/
         )
     }
 }
@@ -275,4 +363,3 @@ fun nameGiverDet(item: FilmData): String? {
 
 fun ratingGiverDet(item: FilmData): String =
     item.ratingKinopoisk?.toString() ?: "-"
-

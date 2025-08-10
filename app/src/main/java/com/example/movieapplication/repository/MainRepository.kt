@@ -21,7 +21,7 @@ class MainRepository @Inject constructor(private val apiInterface: ApiInterface)
         return apiInterface.getDataById(id)
     }
 
-    suspend fun getScreenShotsById(id: Int): Response<ScreenShots>{
-        return  apiInterface.getScreenShotsById(id = id)
+    suspend fun getScreenShotsById(id: Int, type: String): Response<ScreenShots>{
+        return  apiInterface.getScreenShotsById(id = id, type = type)
     }
 }

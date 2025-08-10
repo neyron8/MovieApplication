@@ -39,12 +39,13 @@ interface ApiInterface {
         @Path("id")id: Int
     ):Response<FilmData>
 
-    @GET("v2.2/films/{id}/images?type=SCREENSHOT&page=1")
+    @GET("v2.2/films/{id}/images?page=1")
     @Headers(
         "X-API-KEY: ${Constants.KEY}",
         "Content-Type: application/json",
     )
     suspend fun getScreenShotsById(
-        @Path("id")id: Int
+        @Path("id")id: Int,
+        @Query("type")type: String
     ):Response<ScreenShots>
 }

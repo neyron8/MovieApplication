@@ -19,35 +19,50 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.auth
 import com.google.firebase.options
+import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val mainRepository: MainRepository
+    private val mainRepository: MainRepository,
+    @ApplicationContext  val context : Context
 ) : ViewModel() {
     var listOfStates: MutableState<MainState> = mutableStateOf(MainState())
     var auth = Firebase.auth
-
-
-    init {
-        getStartMovies()
-    }
+    var screenShots: MutableList<ScreenShots.ItemX> = mutableListOf()
 
     fun getStartMovies() = viewModelScope.launch {
-        val k = mainRepository.getStartMovies()
-        if (k.isSuccessful) {
-            k.body()?.let {
-                listOfStates.value = MainState(data = it.items)
+        if (listOfStates.value.data.isEmpty()) {
+            val k = mainRepository.getStartMovies()
+            if (k.isSuccessful) {
+                k.body()?.let {
+                    listOfStates.value =
+                        listOfStates.value.copy(data = it.items) //listofStates.value.
+                    Log.d("Start", "USED")
+                }
+            } else {
+                val errorBodyString = k.errorBody()?.string()
+                if (errorBodyString != null) {
+                    // Assuming error body is a JSON object with a "message" field
+                    val errorObject = Gson().fromJson(errorBodyString, ErrorResponse::class.java)
+                    errorObject.message ?: "Unknown error"
+                    Toast.makeText(context, errorObject.message, Toast.LENGTH_SHORT).show()
+                } else {
+                    "Error: No error body"
+                }
             }
         }
     }
 
     fun getDataById(id: Int) = viewModelScope.launch {
+        screenShots = mutableListOf()
         val k = mainRepository.getDataById(id)
 
         if (k.isSuccessful) {
+            Log.d("GetDataByID", "USED")
             listOfStates.value = listOfStates.value.copy(
                 filmData = k.body()!!
             )
@@ -68,14 +83,31 @@ class MainViewModel @Inject constructor(
     }
 
     fun getScreenShotsById(id: Int) = viewModelScope.launch {
-        val k = mainRepository.getScreenShotsById(id)
+        var k = mainRepository.getScreenShotsById(id,"SCREENSHOT")
         if(k.isSuccessful){
             k.body()?.let {
-                listOfStates.value = listOfStates.value.copy(
-                    screenShots = it.items
-                )
+                screenShots.addAll(it.items)
+                Log.d("SCREENS 1", screenShots.toString())
+                //val j = listOfStates.value.screenShots?.plus(it.items)
+                /*listOfStates.value = listOfStates.value.copy(
+                     screenShots = it.items
+                )*/
             }
         }
+        k = mainRepository.getScreenShotsById(id,"POSTER")
+        if(k.isSuccessful){
+            k.body()?.let {
+                screenShots.addAll(it.items)
+                Log.d("SCREENS 2", screenShots.toString())
+                //val j = listOfStates.value.screenShots?.plus(it.items)
+                /*listOfStates.value = listOfStates.value.copy(
+                     screenShots = it.items
+                )*/
+            }
+        }
+        Log.d("SCREENS", screenShots.toString())
+        listOfStates.value = listOfStates.value.copy(screenShots = screenShots)
+
     }
 
     fun clearList() {
@@ -139,4 +171,5 @@ data class MainState(
     val screenShots: List<ScreenShots.ItemX>? = emptyList()
 )
 
+data class ErrorResponse(val message: String?)
 

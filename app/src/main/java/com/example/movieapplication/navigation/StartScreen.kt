@@ -66,10 +66,14 @@ import com.example.movieapplication.utils.nameGiver
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StartScreen(mainViewModel: MainViewModel = hiltViewModel(), navController: NavHostController) {
-    BackPressSample()
+
+    mainViewModel.getStartMovies()
+
     val state = mainViewModel.listOfStates
     val query: MutableState<String> = remember { mutableStateOf("") }
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
+
+    BackPressSample()
 
     Scaffold(
         modifier = Modifier
@@ -228,12 +232,6 @@ fun TopBar(
 
     TopAppBar(
         title = {
-            Text(
-                text = "New Releases",
-                color = Color.White,
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp
-            )
         },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = Color(0xFF121212),
