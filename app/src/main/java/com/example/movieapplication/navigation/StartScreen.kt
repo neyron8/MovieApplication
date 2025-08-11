@@ -91,6 +91,7 @@ fun StartScreen(mainViewModel: MainViewModel = hiltViewModel(), navController: N
                     .padding(paddingValues)
                     .padding(horizontal = 16.dp)
             ) {
+                //VideoPlayer("https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4")
                 OutlinedTextField(
                     value = query.value,
                     onValueChange = { query.value = it },
