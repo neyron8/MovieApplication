@@ -6,11 +6,13 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -22,8 +24,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
@@ -45,6 +47,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -59,6 +62,7 @@ import com.example.movieapplication.MainViewModel
 import com.example.movieapplication.R
 import com.example.movieapplication.modelsNew.FilmData
 import com.example.movieapplication.modelsNew.ScreenShots
+import kotlin.math.absoluteValue
 
 @Composable
 fun DetailsScreen(
@@ -139,6 +143,7 @@ fun DetailsScreen(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ScreenshotsSection(screenShots: List<ScreenShots.ItemX>?) {
     if (screenShots.isNullOrEmpty()) return
@@ -154,30 +159,41 @@ fun ScreenshotsSection(screenShots: List<ScreenShots.ItemX>?) {
             .padding(horizontal = 16.dp, vertical = 8.dp)
     )
 
-    LazyRow(
+    val pagerState = rememberPagerState(pageCount = { screenShots.size })
+
+    HorizontalPager(
+        state = pagerState,
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        items(screenShots) { screenshot ->
-            Card(
+        pageSpacing = 8.dp,
+        contentPadding = PaddingValues(horizontal = 32.dp)
+    ) { page ->
+        val pageOffset = (pagerState.currentPage - page) + pagerState.currentPageOffsetFraction
+        val scale = lerp(start = 0.85f, stop = 1f, fraction = 1f - pageOffset.absoluteValue.coerceIn(0f, 1f))
+        val alpha = lerp(start = 0.5f, stop = 1f, fraction = 1f - pageOffset.absoluteValue.coerceIn(0f, 1f))
+
+        Card(
+            modifier = Modifier
+                .width(300.dp)
+                .height(300.dp)
+                .graphicsLayer {
+                    scaleX = scale
+                    scaleY = scale
+                    this.alpha = alpha
+                }
+                .clickable { selectedScreenshot = screenShots[page] },
+            shape = RoundedCornerShape(8.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        ) {
+            AsyncImage(
+                model = screenShots[page].imageUrl ?: screenShots[page].previewUrl,
+                contentDescription = "Screenshot",
                 modifier = Modifier
-                    .width(300.dp)
-                    .height(300.dp)
-                    .clickable { selectedScreenshot = screenshot },
-                shape = RoundedCornerShape(8.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-            ) {
-                AsyncImage(
-                    model = screenshot.imageUrl ?: screenshot.previewUrl,
-                    contentDescription = "Screenshot",
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(RoundedCornerShape(8.dp)),
-                    contentScale = ContentScale.Crop
-                )
-            }
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(8.dp)),
+                contentScale = ContentScale.Crop
+            )
         }
     }
 
@@ -210,6 +226,10 @@ fun ScreenshotsSection(screenShots: List<ScreenShots.ItemX>?) {
             }
         }
     }
+}
+
+fun lerp(start: Float, stop: Float, fraction: Float): Float {
+    return start + fraction * (stop - start)
 }
 
 fun extractYouTubeVideoId(url: String): String? {

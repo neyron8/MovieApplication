@@ -91,6 +91,6 @@ dependencies {
 
     implementation ("com.pierfrancescosoffritti.androidyoutubeplayer:core:12.1.0")
 
-
+    implementation ("androidx.compose.foundation:foundation:1.6.0")
 
 }
