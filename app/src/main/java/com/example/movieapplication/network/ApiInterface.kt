@@ -4,6 +4,7 @@ import com.example.movieapplication.modelsNew.CinemaKeywordResponse
 import com.example.movieapplication.modelsNew.CinemaStartResponse
 import com.example.movieapplication.modelsNew.FilmData
 import com.example.movieapplication.modelsNew.ScreenShots
+import com.example.movieapplication.modelsNew.Video
 import com.example.movieapplication.utils.Constants
 import retrofit2.Response
 import retrofit2.http.GET
@@ -48,4 +49,13 @@ interface ApiInterface {
         @Path("id")id: Int,
         @Query("type")type: String
     ):Response<ScreenShots>
+
+    @GET("v2.2/films/{id}/videos")
+    @Headers(
+        "X-API-KEY: ${Constants.KEY}",
+        "Content-Type: application/json",
+    )
+    suspend fun getVideosById(
+        @Path("id")id: Int
+    ):Response<Video>
 }

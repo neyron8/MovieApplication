@@ -1,7 +1,6 @@
 package com.example.movieapplication.navigation
 
 import android.util.Log
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
@@ -10,7 +9,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -91,7 +89,7 @@ fun StartScreen(mainViewModel: MainViewModel = hiltViewModel(), navController: N
                     .padding(paddingValues)
                     .padding(horizontal = 16.dp)
             ) {
-                //VideoPlayer("https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4")
+
                 OutlinedTextField(
                     value = query.value,
                     onValueChange = { query.value = it },

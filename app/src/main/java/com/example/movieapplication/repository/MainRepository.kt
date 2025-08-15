@@ -4,6 +4,7 @@ import com.example.movieapplication.modelsNew.CinemaKeywordResponse
 import com.example.movieapplication.modelsNew.CinemaStartResponse
 import com.example.movieapplication.modelsNew.FilmData
 import com.example.movieapplication.modelsNew.ScreenShots
+import com.example.movieapplication.modelsNew.Video
 import com.example.movieapplication.network.ApiInterface
 import retrofit2.Response
 import javax.inject.Inject
@@ -23,5 +24,9 @@ class MainRepository @Inject constructor(private val apiInterface: ApiInterface)
 
     suspend fun getScreenShotsById(id: Int, type: String): Response<ScreenShots>{
         return  apiInterface.getScreenShotsById(id = id, type = type)
+    }
+
+    suspend fun getVideosById(id: Int): Response<Video>{
+        return  apiInterface.getVideosById(id = id)
     }
 }

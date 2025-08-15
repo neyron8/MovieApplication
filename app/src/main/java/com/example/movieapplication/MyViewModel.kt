@@ -8,17 +8,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.example.movieapplication.modelsNew.CinemaKeywordResponse
 import com.example.movieapplication.modelsNew.FilmData
 import com.example.movieapplication.modelsNew.Item
 import com.example.movieapplication.modelsNew.ScreenShots
+import com.example.movieapplication.modelsNew.Video
 import com.example.movieapplication.repository.MainRepository
 import com.example.movieapplication.utils.convertFilmToItem
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.auth
-import com.google.firebase.options
 import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -33,6 +32,7 @@ class MainViewModel @Inject constructor(
     var listOfStates: MutableState<MainState> = mutableStateOf(MainState())
     var auth = Firebase.auth
     var screenShots: MutableList<ScreenShots.ItemX> = mutableListOf()
+    var videos: MutableList<Video.Item> = mutableListOf()
 
     fun getStartMovies() = viewModelScope.launch {
         if (listOfStates.value.data.isEmpty()) {
@@ -65,6 +65,23 @@ class MainViewModel @Inject constructor(
             Log.d("GetDataByID", "USED")
             listOfStates.value = listOfStates.value.copy(
                 filmData = k.body()!!
+            )
+        }
+    }
+
+    fun getVideosById(id: Int) = viewModelScope.launch {
+        val k = mainRepository.getVideosById(id)
+        videos.clear()
+
+        if (k.isSuccessful) {
+            Log.d("VIDEOS", k.body().toString())
+            k.body()?.items?.forEach {
+                if (it.site == "YOUTUBE"){
+                    videos.add(it)
+                }
+            }
+            listOfStates.value = listOfStates.value.copy(
+                videos = videos //k.body()?.items
             )
         }
     }
@@ -168,7 +185,8 @@ data class MainState(
     var data: List<Item> = emptyList(),
     val error: String = "",
     val filmData: FilmData = FilmData(),
-    val screenShots: List<ScreenShots.ItemX>? = emptyList()
+    val screenShots: List<ScreenShots.ItemX>? = emptyList(),
+    val videos: List<Video.Item>? = emptyList()
 )
 
 data class ErrorResponse(val message: String?)
