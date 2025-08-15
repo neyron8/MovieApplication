@@ -85,7 +85,7 @@ fun DetailsScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = Color(0xFF4A4A4A)),
+            .background(Color(0xFF121212))
     ) {
         BackGroundPoster(filmData = filmData)
         LazyColumn(
@@ -105,9 +105,9 @@ fun DetailsScreen(
                         .padding(horizontal = 16.dp),
                     shape = RoundedCornerShape(16.dp),
                     colors = CardDefaults.cardColors(
-                        containerColor = Color(0xFF4A4A4A).copy(alpha = 0.95f)
+                        containerColor = Color(0xFF2A2A2A)
                     ),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
                 ) {
                     Column(
                         modifier = Modifier
@@ -117,7 +117,7 @@ fun DetailsScreen(
                     ) {
                         Text(
                             text = nameGiverDet(item = filmData).toString(),
-                            style = MaterialTheme.typography.headlineMedium,
+                            style = MaterialTheme.typography.titleLarge.copy(fontSize = 28.sp),
                             color = Color(0xFFBB86FC),
                             textAlign = TextAlign.Center,
                             modifier = Modifier.fillMaxWidth()
@@ -152,7 +152,7 @@ fun ScreenshotsSection(screenShots: List<ScreenShots.ItemX>?) {
 
     Text(
         text = "Скриншоты",
-        style = MaterialTheme.typography.titleMedium,
+        style = MaterialTheme.typography.titleMedium.copy(fontSize = 20.sp),
         color = Color(0xFFBB86FC),
         modifier = Modifier
             .fillMaxWidth()
@@ -184,7 +184,8 @@ fun ScreenshotsSection(screenShots: List<ScreenShots.ItemX>?) {
                 }
                 .clickable { selectedScreenshot = screenShots[page] },
             shape = RoundedCornerShape(8.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+            colors = CardDefaults.cardColors(containerColor = Color(0xFF2A2A2A))
         ) {
             AsyncImage(
                 model = screenShots[page].imageUrl ?: screenShots[page].previewUrl,
@@ -206,7 +207,8 @@ fun ScreenshotsSection(screenShots: List<ScreenShots.ItemX>?) {
                 modifier = Modifier
                     .fillMaxWidth(0.9f)
                     .fillMaxHeight(0.6f)
-                    .clickable { selectedScreenshot = null },
+                    .clickable { selectedScreenshot = null }
+                    .background(Color(0xFF2A2A2A), RoundedCornerShape(16.dp)),
                 contentAlignment = Alignment.Center
             ) {
                 AsyncImage(
@@ -232,11 +234,6 @@ fun lerp(start: Float, stop: Float, fraction: Float): Float {
     return start + fraction * (stop - start)
 }
 
-fun extractYouTubeVideoId(url: String): String? {
-    val regex = "(?<=/videos/|embed/|youtu.be/|/v/|/e/|watch\\?v%3D|watch\\?v=)([^#&?]*)(?:[?&#].*)?".toRegex()
-    return regex.find(url)?.groupValues?.get(1)
-}
-
 @Composable
 fun TextBuilder(icon: ImageVector, title: String, bodyText: String) {
     Column(
@@ -256,14 +253,14 @@ fun TextBuilder(icon: ImageVector, title: String, bodyText: String) {
             Text(
                 text = title,
                 modifier = Modifier.padding(start = 8.dp),
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp),
                 color = Color(0xFFBB86FC)
             )
         }
         Text(
             text = bodyText,
-            style = MaterialTheme.typography.bodyMedium,
-            color = Color(0xFFBB86FC),
+            style = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp),
+            color = Color(0xFFE0E0E0),
             lineHeight = 22.sp
         )
     }
@@ -288,8 +285,8 @@ fun Rating(filmData: FilmData, modifier: Modifier) {
             Text(
                 text = ratingGiverDet(filmData).toString(),
                 modifier = Modifier.padding(start = 6.dp),
-                style = MaterialTheme.typography.bodyLarge,
-                color = Color(0xFFBB86FC)
+                style = MaterialTheme.typography.bodyLarge.copy(fontSize = 16.sp),
+                color = Color(0xFFE0E0E0)
             )
         }
         Spacer(modifier = Modifier.width(24.dp))
@@ -297,14 +294,14 @@ fun Rating(filmData: FilmData, modifier: Modifier) {
             Icon(
                 painter = painterResource(id = R.drawable.time_24),
                 contentDescription = "Duration",
-                tint = Color.White,
+                tint = Color(0xFFE0E0E0),
                 modifier = Modifier.size(20.dp)
             )
             Text(
                 text = "${filmData.filmLength} мин",
                 modifier = Modifier.padding(start = 6.dp),
-                style = MaterialTheme.typography.bodyLarge,
-                color = Color(0xFFBB86FC)
+                style = MaterialTheme.typography.bodyLarge.copy(fontSize = 16.sp),
+                color = Color(0xFFE0E0E0)
             )
         }
     }
@@ -323,15 +320,16 @@ fun ForegroundPoster(filmData: FilmData) {
                     stiffness = Spring.StiffnessLow
                 )
             ),
-        shape = RoundedCornerShape(20.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF2A2A2A))
     ) {
         AsyncImage(
             model = filmData.posterUrl,
             contentDescription = filmData.shortDescription,
             modifier = Modifier
                 .width(260.dp)
-                .clip(RoundedCornerShape(20.dp)),
+                .clip(RoundedCornerShape(16.dp)),
             contentScale = ContentScale.Crop
         )
         Box(
@@ -340,11 +338,10 @@ fun ForegroundPoster(filmData: FilmData) {
                     brush = Brush.verticalGradient(
                         colors = listOf(
                             Color.Transparent,
-                            Color.Transparent,
-                            MaterialTheme.colorScheme.background.copy(alpha = 0.7f)
+                            Color(0xFF2A2A2A).copy(alpha = 0.7f)
                         )
                     ),
-                    shape = RoundedCornerShape(20.dp)
+                    shape = RoundedCornerShape(16.dp)
                 )
         )
     }
@@ -355,7 +352,7 @@ fun BackGroundPoster(filmData: FilmData) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = Color(0xFF4A4A4A))
+            .background(Color(0xFF121212))
     ) {
         AsyncImage(
             model = filmData.posterUrl,
@@ -368,6 +365,14 @@ fun BackGroundPoster(filmData: FilmData) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color(0xFF121212).copy(alpha = 0.7f),
+                            Color(0xFF121212)
+                        )
+                    )
+                )
         )
     }
 }

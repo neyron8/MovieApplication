@@ -178,6 +178,10 @@ class MainViewModel @Inject constructor(
             }
     }
 
+    fun getAccountMail(): String? {
+        return auth.currentUser?.email
+    }
+
 }
 
 data class MainState(

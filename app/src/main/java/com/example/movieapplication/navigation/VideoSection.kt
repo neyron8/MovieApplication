@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
@@ -56,7 +57,7 @@ fun VideosSection(videoUrls: List<Video.Item>?) {
     ) {
         Text(
             text = "Видео",
-            style = MaterialTheme.typography.titleMedium,
+            style = MaterialTheme.typography.titleMedium.copy(fontSize = 20.sp),
             color = Color(0xFFBB86FC),
             modifier = Modifier
                 .fillMaxWidth()
@@ -71,12 +72,9 @@ fun VideosSection(videoUrls: List<Video.Item>?) {
                 colors = CardDefaults.cardColors(
                     containerColor = Color.Transparent
                 ),
-                elevation = CardDefaults.cardElevation(
-                    defaultElevation = 0.dp
-                )
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
             ) {
                 VideoPlayer(videoUrl = videoUrl.url)
-                Log.d("URL", videoUrl.url.toString())
             }
         }
     }
@@ -97,7 +95,7 @@ fun VideoPlayer(videoUrl: String?) {
                     enableAutomaticInitialization = false
                     initialize(object : AbstractYouTubePlayerListener() {
                         override fun onReady(youTubePlayer: YouTubePlayer) {
-                            youTubePlayer.cueVideo(videoId, 0f)
+                            youTubePlayer.cueVideo(videoId.toString(), 0f)
                         }
                         override fun onError(youTubePlayer: YouTubePlayer, error: PlayerConstants.PlayerError) {
                             errorMessage = "Ошибка YouTube: $error"
@@ -111,12 +109,12 @@ fun VideoPlayer(videoUrl: String?) {
                 modifier = Modifier
                     .fillMaxSize()
                     .aspectRatio(16f / 9f)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(Color.Black),
+                    .clip(RoundedCornerShape(8.dp)),
+                    //.background(Color(0xFF2A2A2A)),
                 update = { view ->
                     view.addYouTubePlayerListener(object : AbstractYouTubePlayerListener() {
                         override fun onReady(youTubePlayer: YouTubePlayer) {
-                            youTubePlayer.cueVideo(videoId, 0f)
+                            youTubePlayer.cueVideo(videoId.toString(), 0f)
                         }
                     })
                 }
@@ -130,8 +128,8 @@ fun VideoPlayer(videoUrl: String?) {
         } else {
             Text(
                 text = "Недействительный YouTube URL",
-                color = Color(0xFFBB86FC),
-                style = MaterialTheme.typography.bodyMedium,
+                color = Color(0xFFEF5350),
+                style = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
@@ -188,12 +186,17 @@ fun VideoPlayer(videoUrl: String?) {
     errorMessage?.let {
         Text(
             text = it,
-            color = Color.Red,
-            style = MaterialTheme.typography.bodyMedium,
+            color = Color(0xFFEF5350),
+            style = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
             textAlign = TextAlign.Center
         )
     }
+}
+
+fun extractYouTubeVideoId(url: String): String? {
+    val regex = "(?<=/videos/|embed/|youtu.be/|/v/|/e/|watch\\?v%3D|watch\\?v=)([^#&?]*)(?:[?&#].*)?".toRegex()
+    return regex.find(url)?.groupValues?.get(1)
 }

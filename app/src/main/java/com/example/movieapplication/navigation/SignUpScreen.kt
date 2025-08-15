@@ -45,6 +45,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.movieapplication.MainViewModel
@@ -59,15 +60,14 @@ fun SignUpScreen(mainViewModel: MainViewModel = hiltViewModel(), navController: 
     val isFormValid = email.isNotBlank() && password.isNotBlank()
     val isEmailValid = Patterns.EMAIL_ADDRESS.matcher(email).matches()
 
-
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFF2A2A2A),
-                        Color(0xFFBB86FC)
+                        Color(0xFF121212),
+                        Color(0xFF2A2A2A)
                     )
                 )
             )
@@ -83,31 +83,30 @@ fun SignUpScreen(mainViewModel: MainViewModel = hiltViewModel(), navController: 
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(16.dp))
-                    .shadow(8.dp, RoundedCornerShape(16.dp))
-                    .background(Color(0xFF2A2A2A))
-                    .padding(24.dp),
+                    .shadow(8.dp, RoundedCornerShape(16.dp)),
                 colors = CardDefaults.cardColors(containerColor = Color(0xFF2A2A2A))
             ) {
                 Column(
+                    modifier = Modifier.padding(24.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Spacer(Modifier.height(8.dp))
                     Text(
                         text = "Регистрация",
-                        style = MaterialTheme.typography.headlineSmall.copy(
+                        style = MaterialTheme.typography.titleLarge.copy(
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFFBB86FC)
-                        )
+                            fontSize = 28.sp
+                        ),
+                        color = Color(0xFFBB86FC)
                     )
 
                     Spacer(Modifier.height(24.dp))
 
                     TextField(
-                        shape = MaterialTheme.shapes.medium,
                         value = email,
                         onValueChange = { email = it },
-                        label = { Text("Email") },
+                        label = { Text("Email", color = Color(0xFFBB86FC)) },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                        shape = RoundedCornerShape(12.dp),
                         leadingIcon = {
                             Icon(
                                 Icons.Filled.Email,
@@ -121,11 +120,10 @@ fun SignUpScreen(mainViewModel: MainViewModel = hiltViewModel(), navController: 
                             focusedContainerColor = Color(0xFF4A4A4A),
                             unfocusedContainerColor = Color(0xFF4A4A4A),
                             cursorColor = Color(0xFFBB86FC),
-                            errorCursorColor = Color.Red,
                             focusedIndicatorColor = Color.Transparent,
                             unfocusedIndicatorColor = Color.Transparent,
                             focusedLabelColor = Color(0xFFBB86FC),
-                            unfocusedLabelColor = Color(0xFFBB86FC),
+                            unfocusedLabelColor = Color(0xFFBB86FC)
                         ),
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -135,9 +133,10 @@ fun SignUpScreen(mainViewModel: MainViewModel = hiltViewModel(), navController: 
                     TextField(
                         value = password,
                         onValueChange = { password = it },
-                        label = { Text("Пароль") },
+                        label = { Text("Пароль", color = Color(0xFFBB86FC)) },
                         visualTransformation = if (passwordHidden) PasswordVisualTransformation() else VisualTransformation.None,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                        shape = RoundedCornerShape(12.dp),
                         leadingIcon = {
                             Icon(
                                 Icons.Filled.Lock,
@@ -160,14 +159,12 @@ fun SignUpScreen(mainViewModel: MainViewModel = hiltViewModel(), navController: 
                             focusedContainerColor = Color(0xFF4A4A4A),
                             unfocusedContainerColor = Color(0xFF4A4A4A),
                             cursorColor = Color(0xFFBB86FC),
-                            errorCursorColor = Color.Red,
                             focusedIndicatorColor = Color.Transparent,
                             unfocusedIndicatorColor = Color.Transparent,
                             focusedLabelColor = Color(0xFFBB86FC),
-                            unfocusedLabelColor = Color(0xFFBB86FC),
+                            unfocusedLabelColor = Color(0xFFBB86FC)
                         ),
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = MaterialTheme.shapes.medium,
+                        modifier = Modifier.fillMaxWidth()
                     )
 
                     Spacer(Modifier.height(24.dp))
@@ -192,20 +189,21 @@ fun SignUpScreen(mainViewModel: MainViewModel = hiltViewModel(), navController: 
                             .fillMaxWidth()
                             .height(48.dp),
                         shape = RoundedCornerShape(12.dp)
-
                     ) {
-                        Text("Регистрация")
+                        Text("Регистрация", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
                     }
+
+                    Spacer(Modifier.height(16.dp))
 
                     TextButton(onClick = {
                         navController.popBackStack()
                         email = ""
                         password = ""
-                    }
-                    ) {
+                    }) {
                         Text(
                             text = "Уже есть аккаунт? Вход",
-                            color = Color(0xFFBB86FC)
+                            color = Color(0xFFBB86FC),
+                            fontSize = 14.sp
                         )
                     }
                 }

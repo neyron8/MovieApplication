@@ -7,6 +7,7 @@ import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,6 +22,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -30,7 +32,9 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -64,7 +68,6 @@ import com.example.movieapplication.utils.nameGiver
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StartScreen(mainViewModel: MainViewModel = hiltViewModel(), navController: NavHostController) {
-
     mainViewModel.getStartMovies()
 
     val state = mainViewModel.listOfStates
@@ -75,7 +78,7 @@ fun StartScreen(mainViewModel: MainViewModel = hiltViewModel(), navController: N
 
     Scaffold(
         modifier = Modifier
-            .background(Color(0xFF1A1A1A))
+            .background(Color(0xFF121212))
             .nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             TopBar(
@@ -88,8 +91,8 @@ fun StartScreen(mainViewModel: MainViewModel = hiltViewModel(), navController: N
                 modifier = Modifier
                     .padding(paddingValues)
                     .padding(horizontal = 16.dp)
+                    .background(Color(0xFF121212))
             ) {
-
                 OutlinedTextField(
                     value = query.value,
                     onValueChange = { query.value = it },
@@ -110,7 +113,7 @@ fun StartScreen(mainViewModel: MainViewModel = hiltViewModel(), navController: N
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp),
-                    colors = androidx.compose.material3.OutlinedTextFieldDefaults.colors(
+                    colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = Color(0xFFBB86FC),
                         unfocusedBorderColor = Color(0xFF4A4A4A),
                         focusedTextColor = Color.White,
@@ -121,7 +124,6 @@ fun StartScreen(mainViewModel: MainViewModel = hiltViewModel(), navController: N
                 )
 
                 if (state.value.error.isNotBlank()) {
-                    Log.d("TAG", "MainContent: ${state.value.error}")
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
@@ -155,7 +157,7 @@ fun StartScreen(mainViewModel: MainViewModel = hiltViewModel(), navController: N
                 }
             }
         },
-        containerColor = Color(0xFF1A1A1A)
+        containerColor = Color(0xFF121212)
     )
 }
 
@@ -192,7 +194,7 @@ fun ItemUi(itemIndex: Int, movieList: List<Item>, navController: NavHostControll
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(
-                        Color(0xFF121212).copy(alpha = 0.7f)
+                        Color(0xFF2A2A2A).copy(alpha = 0.7f)
                     )
                     .padding(8.dp)
             ) {
@@ -212,7 +214,7 @@ fun ItemUi(itemIndex: Int, movieList: List<Item>, navController: NavHostControll
                     text = movieList[itemIndex].year?.toString() ?: "",
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center,
-                    color = Color(0xFFBB86FC),
+                    color = Color(0xFFE0E0E0),
                     fontSize = 12.sp
                 )
             }
@@ -231,6 +233,19 @@ fun TopBar(
 
     TopAppBar(
         title = {
+            Row {
+                Icon(
+                    Icons.Default.AccountCircle,
+                    tint = Color(0xFFBB86FC),
+                    contentDescription = "Account Mail"
+                )
+                Text(
+                    text = mainViewModel.getAccountMail().toString(),
+                    color = Color(0xFFBB86FC),
+                    style = MaterialTheme.typography.titleLarge.copy(fontSize = 20.sp)
+                )
+            }
+
         },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = Color(0xFF121212),
@@ -271,7 +286,7 @@ private fun AlertLogOut(
         text = {
             Text(
                 text = "Вы точно хотите выйти из аккаунта?",
-                color = Color.White,
+                color = Color(0xFFE0E0E0),
                 fontSize = 16.sp
             )
         },
@@ -286,7 +301,7 @@ private fun AlertLogOut(
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFFBB86FC),
-                    contentColor = Color.White
+                    contentColor = Color.Black
                 ),
                 shape = RoundedCornerShape(12.dp),
                 modifier = Modifier.padding(8.dp)

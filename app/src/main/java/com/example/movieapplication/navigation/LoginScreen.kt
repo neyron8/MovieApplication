@@ -36,6 +36,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.movieapplication.MainViewModel
 import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseUser
@@ -58,8 +59,8 @@ fun LoginScreen(mainViewModel: MainViewModel = hiltViewModel(), navController: N
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFF2A2A2A),
-                        Color(0xFFBB86FC)
+                        Color(0xFF121212),
+                        Color(0xFF2A2A2A)
                     )
                 )
             )
@@ -75,21 +76,17 @@ fun LoginScreen(mainViewModel: MainViewModel = hiltViewModel(), navController: N
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(16.dp))
-                    .shadow(8.dp, RoundedCornerShape(16.dp))
-                    .background(Color(0xFF2A2A2A))
-                    .padding(24.dp),
+                    .shadow(8.dp, RoundedCornerShape(16.dp)),
                 colors = CardDefaults.cardColors(containerColor = Color(0xFF2A2A2A))
             ) {
                 Column(
+                    modifier = Modifier.padding(24.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-
-                    Spacer(Modifier.height(8.dp))
-
                     Text(
                         text = "Вход",
                         style = MaterialTheme.typography.titleLarge.copy(
-                            fontWeight = FontWeight.Medium,
+                            fontWeight = FontWeight.Bold,
                             fontSize = 28.sp
                         ),
                         color = Color(0xFFBB86FC),
@@ -98,11 +95,10 @@ fun LoginScreen(mainViewModel: MainViewModel = hiltViewModel(), navController: N
 
                     Spacer(Modifier.height(24.dp))
 
-                    // Email Field
                     TextField(
                         value = email,
                         onValueChange = { email = it },
-                        label = { Text("Email") },
+                        label = { Text("Email", color = Color(0xFFBB86FC)) },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                         shape = RoundedCornerShape(12.dp),
                         leadingIcon = {
@@ -128,11 +124,10 @@ fun LoginScreen(mainViewModel: MainViewModel = hiltViewModel(), navController: N
 
                     Spacer(Modifier.height(16.dp))
 
-                    // Password Field
                     TextField(
                         value = password,
                         onValueChange = { password = it },
-                        label = { Text("Пароль") },
+                        label = { Text("Пароль", color = Color(0xFFBB86FC)) },
                         visualTransformation = if (passwordHidden) PasswordVisualTransformation() else VisualTransformation.None,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                         shape = RoundedCornerShape(12.dp),
@@ -230,7 +225,7 @@ fun LoginScreen(mainViewModel: MainViewModel = hiltViewModel(), navController: N
 }
 
 private fun checkAutoLogin(navController: NavController) {
-    val currentUser: FirebaseUser? = Firebase.auth.currentUser
+    val currentUser: FirebaseUser? = FirebaseAuth.getInstance().currentUser
     if (currentUser != null) {
         navController.navigate("Start Screen")
         Log.d("LOGIN", "Success ${currentUser.email}")
